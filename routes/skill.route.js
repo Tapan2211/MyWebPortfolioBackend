@@ -1,5 +1,8 @@
 const router = require('express').Router();
+// const validate = require('../middleware/skill.middleware');
+// const { skillSchema } = require('../validation/skill.validation');
 const multer = require('multer');
+
 const {
     createSkill,
     getSkills,
@@ -21,6 +24,5 @@ router.post('/create', upload.single('image'), createSkill);
 router.get('/', getSkills);
 router.put('/:id', upload.single('image'), updateSkills);
 router.delete('/:id', deleteSkills);
-
 
 module.exports = router;

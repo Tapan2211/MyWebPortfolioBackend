@@ -7,10 +7,9 @@ const createSkill = async (req, res) => {
         const image = req.file ? `/uploads/${req.file.filename}` : null;
 
         if (!skill || !image) {
-            return res.status(400).json({ message: 'All fields are required' });
+            return res.status(400).json({ message: 'Skill and image are required' });
         }
 
-        // Construct the skill object
         const skillData = {
             skill,
             image,
@@ -22,8 +21,8 @@ const createSkill = async (req, res) => {
         const skillImageUrl = `${req.protocol}://${req.get('host')}${data.image}`;
 
         const responseData = {
-            skill: data.skill,  // Correct the property name
-            image: skillImageUrl, // Use the skillImageUrl instead of data.skillImageUrl
+            skill: data.skill,
+            image: skillImageUrl,
             _id: data._id,
             __v: data.__v
         };
@@ -32,28 +31,33 @@ const createSkill = async (req, res) => {
         console.error('Error creating Skill:', error);
         return res.status(400).json({ message: 'Error creating Skill', error: error.message });
     }
-}
+};
 
 const getSkills = async (req, res) => {
-    const skills = await skillsInstance.getSkill();
-    if (!skills || skills.length === 0) {
-        return res.status(400).json({ message: 'No record found' });
+    try {
+        const skills = await skillsInstance.getSkill();
+        if (!skills || skills.length === 0) {
+            return res.status(404).json({ message: 'No record found' });
+        }
+
+        const skillDetails = skills.map(skill => ({
+            ...skill._doc,
+            image: `${req.protocol}://${req.get('host')}${skill.image}`
+        }));
+
+        return res.status(200).json({ skillDetails });
+    } catch (error) {
+        console.error('Error fetching Skills:', error);
+        return res.status(500).json({ message: 'Error fetching Skills', error: error.message });
     }
-
-    const skillDetails = skills.map(skills => ({
-        ...skills._doc,
-        image: `${req.protocol}://${req.get('host')}${skills.image}`
-    }));
-
-    return res.status(200).json({ skillDetails });
-}
+};
 
 const updateSkills = async (req, res) => {
-    const { skill } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : null; // Get the uploaded file path if it exists
-    const { id } = req.params;
-
     try {
+        const { skill } = req.body;
+        const image = req.file ? `/uploads/${req.file.filename}` : null; // Get the uploaded file path if it exists
+        const { id } = req.params;
+
         const updateData = {
             skill,
             image
@@ -62,10 +66,10 @@ const updateSkills = async (req, res) => {
         const updatedSkill = await skillsInstance.update(id, updateData);
 
         if (!updatedSkill) {
-            return res.status(404).json({ message: 'Skills not found', data: updatedSkill });
+            return res.status(404).json({ message: 'Skill not found' });
         }
 
-        // Modify the response to return the full URL for projectImage
+        // Modify the response to return the full URL for skill image
         const updatedSkillImageUrl = `${req.protocol}://${req.get('host')}${updatedSkill.image}`;
 
         const updatedResponseData = {
@@ -74,27 +78,30 @@ const updateSkills = async (req, res) => {
             _id: updatedSkill._id,
             __v: updatedSkill.__v
         };
-        res.status(200).json({ message: 'Skills updated successfully', data: updatedResponseData });
+        res.status(200).json({ message: 'Skill updated successfully', data: updatedResponseData });
     } catch (error) {
-        console.error("Error updating Skill:", error);
-        return res.status(500).json({ message: 'Error updating Skills', error: error.message });
+        console.error('Error updating Skill:', error);
+        return res.status(500).json({ message: 'Error updating Skill', error: error.message });
     }
-}
+};
 
 const deleteSkills = async (req, res) => {
     try {
         const skillID = req.params.id;
         const result = await skillsInstance.delete(skillID);
-        return res.status(200).json({ message: 'Successfully deleted', result });
+        if (!result) {
+            return res.status(404).json({ message: 'Skill not found' });
+        }
+        return res.status(200).json({ message: 'Skill deleted successfully' });
     } catch (error) {
-        console.error("Error deleting skill:", error); // Log the error details
-        return res.status(500).json({ message: 'Could not delete skill', error: error.message });
+        console.error('Error deleting Skill:', error);
+        return res.status(500).json({ message: 'Error deleting Skill', error: error.message });
     }
-}
+};
 
 module.exports = {
     createSkill,
     getSkills,
     updateSkills,
     deleteSkills
-}
+};
