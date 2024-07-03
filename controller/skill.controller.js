@@ -55,7 +55,7 @@ const getSkills = async (req, res) => {
 const updateSkills = async (req, res) => {
     try {
         const { skill } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : null; // Get the uploaded file path if it exists
+        const image = req.file ? `/uploads/${req.file.filename}` : null;
         const { id } = req.params;
 
         const updateData = {

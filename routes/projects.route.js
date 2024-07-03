@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const multer = require('multer');
-
+const validate = require('../middleware/project.middleware');
+const { projectSchema } = require('../validation/project.validation');
 const {
     createProject,
     getProjects,
@@ -19,7 +20,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post('/create', upload.single('projectImage'), createProject);
+router.post('/create', upload.single('projectImage'), validate(projectSchema), createProject);
 router.get('/', getProjects);
 router.put('/:id', upload.single('projectImage'), updateProject);
 router.delete('/:id', deleteProject);

@@ -1,8 +1,7 @@
 const router = require('express').Router();
-// const validate = require('../middleware/skill.middleware');
-// const { skillSchema } = require('../validation/skill.validation');
 const multer = require('multer');
-
+const validate = require('../middleware/skill.middleware');
+const { skillsSchema } = require('../validation/skill.validation');
 const {
     createSkill,
     getSkills,
@@ -20,7 +19,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.post('/create', upload.single('image'), createSkill);
+router.post('/create', upload.single('image'), validate(skillsSchema), createSkill);
 router.get('/', getSkills);
 router.put('/:id', upload.single('image'), updateSkills);
 router.delete('/:id', deleteSkills);
