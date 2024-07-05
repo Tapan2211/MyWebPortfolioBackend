@@ -4,6 +4,7 @@ const {
     updateEducationDoc,
     deleteEducationDoc
 } = require('../services/education.service');
+const message = require('../config/messages');
 
 const createEducation = async (req, res) => {
     try {
@@ -11,7 +12,7 @@ const createEducation = async (req, res) => {
         const { degree, branch, grade, collageName, city, passingYear } = req.body;
 
         if (!degree || !branch || !grade || !collageName || !city || !passingYear) {
-            return res.status(400).json({ message: 'All fields are required' });
+            return res.status(400).json({ message: message.errors.ALL_FIELD_REQUIRED });
         }
 
         // Construct the project object
@@ -36,10 +37,10 @@ const createEducation = async (req, res) => {
             _id: data._id,
             __v: data.__v
         };
-        res.status(201).json({ message: 'Education created successfully', data: responseData });
+        res.status(201).json({ message: message.success.EDUCATION_CREATE, data: responseData });
     } catch (error) {
-        console.error('Error creating education:', error);
-        return res.status(400).json({ message: 'Error creating educations', error: error.message });
+        console.error(message.errors.EDUCATION_CREATED_ERROR, error);
+        return res.status(400).json({ message: message.errors.EDUCATION_CREATED_ERROR, error: error.message });
     }
 }
 
@@ -48,8 +49,8 @@ const getEducation = async (req, res) => {
         const education = await getEducationDoc();
         res.status(200).json(education);
     } catch (error) {
-        console.error("Error fetching categories:", error);
-        return res.status(500).json({ message: 'Error fetching category list', error: error.message });
+        console.error(message.errors.EDUCATION_FETCHING_ERROR, error);
+        return res.status(500).json({ message: message.errors.EDUCATION_FETCHING_ERROR, error: error.message });
     }
 }
 
@@ -60,20 +61,20 @@ const updateEducation = async (req, res) => {
         const { degree, branch, grade, collageName, city, passingYear } = req.body;
 
         if (!degree || !branch || !grade || !collageName || !city || !passingYear) {
-            return res.status(400).json({ message: 'All fields are required' });
+            return res.status(400).json({ message: message.ALL_FIELD_REQUIRED });
         }
 
         const education = { degree, branch, grade, collageName, city, passingYear };
         const result = await updateEducationDoc(id, education);
 
         if (!result) {
-            return res.status(404).json({ message: 'Education not found' });
+            return res.status(404).json({ message: message.NO_RECORD_FOUND });
         }
 
-        return res.status(200).json({ message: "Successfully updated education", result });
+        return res.status(200).json({ message: message.success.EDUCATION_UPDATE, result });
     } catch (error) {
-        console.error("Error updating Education:", error);
-        return res.status(500).json({ message: 'Error updating Education', error: error.message });
+        console.error(message.errors.EDUCATION_UPDATE_ERROR, error);
+        return res.status(500).json({ message: message.errors.EDUCATION_UPDATE_ERROR, error: error.message });
     }
 }
 
@@ -82,12 +83,12 @@ const deleteEducation = async (req, res) => {
         const projectID = req.params.id;
         const result = await deleteEducationDoc(projectID);
         if (!result) {
-            return res.status(404).json({ message: 'Education not found' });
+            return res.status(404).json({ message: message.NO_RECORD_FOUND });
         }
-        return res.status(200).json({ message: 'Successfully deleted', result });
+        return res.status(200).json({ message: message.success.SUCCESSFULLY_DELETE, result });
     } catch (error) {
-        console.error("Error deleting education:", error); // Log the error details
-        return res.status(500).json({ message: 'Could not delete education', error: error.message });
+        console.error(message.errors.EDUCATION_DELETE_ERROR, error); // Log the error details
+        return res.status(500).json({ message: message.errors.EDUCATION_DELETE_ERROR, error: error.message });
     }
 }
 
