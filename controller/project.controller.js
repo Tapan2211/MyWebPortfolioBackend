@@ -2,7 +2,7 @@ const {
     createProjectDoc,
     getProjectDoc,
     updateProjectDoc,
-    deleteEducationDoc
+    deleteProjectDoc
 } = require('../services/project.service');
 const message = require('../config/messages');
 
@@ -96,7 +96,7 @@ const updateProject = async (req, res) => {
 const deleteProject = async (req, res) => {
     try {
         const projectID = req.params.id;
-        const result = await deleteEducationDoc(projectID);
+        const result = await deleteProjectDoc(projectID);
         return res.status(200).json({ message: message.success.SUCCESSFULLY_DELETE, result });
     } catch (error) {
         console.error(message.errors.PROJECT_DELETE_ERROR, error);

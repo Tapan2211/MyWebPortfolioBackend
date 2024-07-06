@@ -47,6 +47,9 @@ const createEducation = async (req, res) => {
 const getEducation = async (req, res) => {
     try {
         const education = await getEducationDoc();
+        if (!education || education.length === 0) {
+            return res.status(404).json({ message: message.NO_RECORD_FOUND })
+        }
         res.status(200).json(education);
     } catch (error) {
         console.error(message.errors.EDUCATION_FETCHING_ERROR, error);

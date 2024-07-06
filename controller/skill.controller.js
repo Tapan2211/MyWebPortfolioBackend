@@ -94,7 +94,7 @@ const deleteSkills = async (req, res) => {
         if (!result) {
             return res.status(404).json({ message: message.NO_RECORD_FOUND });
         }
-        return res.status(200).json({ message: message.success.SUCCESSFULLY_DELETE });
+        return res.status(200).json({ message: message.success.SUCCESSFULLY_DELETE, result });
     } catch (error) {
         console.error(message.errors.SKILL_DELETE_ERROR, error);
         return res.status(500).json({ message: message.errors.SKILL_DELETE_ERROR, error: error.message });
