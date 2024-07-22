@@ -25,7 +25,9 @@ const informationSchema = mongoose.Schema({
         type: String,
         required: true
     }
-});
+},
+    { timestamps: true }
+);
 
 const informationModel = mongoose.model('information', informationSchema);
 module.exports = informationModel;

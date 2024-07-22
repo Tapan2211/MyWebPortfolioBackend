@@ -10,5 +10,5 @@ const educationSchema = mongoose.Schema({
     passingYear: { type: String, required: true },
 });
 
-const educationModule = mongoose.model('education', educationSchema);
-module.exports = educationModule;
+const educationModel = mongoose.model('education', educationSchema);
+module.exports = educationModel;

@@ -1,0 +1,5 @@
+1. Javascript single threaded or multi threaded language ?
+2. what is protoobject "__proto__"?
+3. what are discriptors in javascript?
+4. What is iterators in javascript ?
+5. what is csr vs ssr ?

@@ -11,6 +11,7 @@ const education = require('./routes/education.route');
 const experience = require('./routes/experience.route');
 const information = require('./routes/information.route');
 const skills = require('./routes/skill.route');
+const about = require('./routes/about.route');
 
 // Serve static files from the "uploads" directory
 app.use('/uploads', express.static('uploads'));
@@ -32,6 +33,7 @@ app.use('/education', education);
 app.use('/experience', experience);
 app.use('/information', information);
 app.use('/skill', skills);
+app.use('/about', about);
 
 app.listen(PORT, (error) => {
     if (!error) {
