@@ -11,8 +11,9 @@ const createAboutDoc = async (data, files) => {
     return result;
 }
 
-const getAboutDataDoc = async () => {
-    const result = await aboutModel.findOne(); // Fetch the first document
+const getAboutDataDoc = async (id) => {
+    const result = await aboutModel.findById(id);
+    console.log('User found:', id);
     return result;
 }
 

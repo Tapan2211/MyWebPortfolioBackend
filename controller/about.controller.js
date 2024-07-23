@@ -12,7 +12,7 @@ const createAbout = async (req, res) => {
 
 const getAbout = async (req, res) => {
     try {
-        const about = await getAboutDataDoc();
+        const about = await getAboutDataDoc(req.params.id);
         if (!about) {
             return res.status(404).json({ message: 'Data not found' });
         }
@@ -22,7 +22,7 @@ const getAbout = async (req, res) => {
             image: `${req.protocol}://${req.get('host')}/${about.image}`,
             pdf: `${req.protocol}://${req.get('host')}/${about.pdf}`
         };
-
+        console.log('User retrieved:', fullAbout);
         return res.status(200).json(fullAbout);
     } catch (error) {
         res.status(400).json({ message: error.message });

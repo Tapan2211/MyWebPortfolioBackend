@@ -13,6 +13,6 @@ router.post('/create',
     createAbout
 );
 
-router.get('/', getAbout);
+router.get('/:id', getAbout);
 
 module.exports = router;
