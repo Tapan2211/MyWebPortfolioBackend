@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const DB_URI = 'mongodb://localhost:27017/test';
+// const DB_URI = 'mongodb://localhost:27017/test';
+// const DB_URI = 'mongodb://localhost:27017/test';
+const DB_URI = 'mongodb+srv://tghataliya:tghayaliya@cluster0.6eel6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 const connectionDB = async () => {
     try {

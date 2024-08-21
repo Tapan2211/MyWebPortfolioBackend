@@ -18,7 +18,7 @@ const createSkill = async (req, res) => {
         };
 
         const data = await skillsInstance.create(skillData);
-
+        console.log("DATA_SKILL", data);
         // Modify the response to return the full URL for skillImage
         const skillImageUrl = `${req.protocol}://${req.get('host')}${data.image}`;
 

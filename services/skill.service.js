@@ -4,6 +4,7 @@ class skillService {
     async create(skillData) {
         try {
             const skill = new skillModel(skillData);
+            console.log("SKILL", skill);
             return await skill.save();
         } catch (error) {
             console.error('Error creating Skill:', error);
