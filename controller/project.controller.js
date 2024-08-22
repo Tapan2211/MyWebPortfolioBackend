@@ -6,6 +6,93 @@ const {
 } = require('../services/project.service');
 const message = require('../config/messages');
 
+// const createProject = async (req, res) => {
+//     try {
+//         const { projectName, demoLink, gitLink } = req.body;
+//         const projectImage = req.file ? `/uploads/${req.file.filename}` : null;
+
+//         if (!projectName || !demoLink || !gitLink || !projectImage) {
+//             return res.status(400).json({ message: message.errors.ALL_FIELD_REQUIRED });
+//         }
+
+//         // Construct the project object
+//         const project = {
+//             projectName,
+//             demoLink,
+//             gitLink,
+//             projectImage
+//         };
+
+//         const data = await createProjectDoc(project);
+//         // Modify the response to return the full URL for projectImage
+//         const fullProjectImageUrl = `${req.protocol}://${req.get('host')}${data.projectImage}`;
+
+//         const responseData = {
+//             projectName: data.projectName,
+//             demoLink: data.demoLink,
+//             gitLink: data.gitLink,
+//             projectImage: fullProjectImageUrl,
+//             _id: data._id,
+//             __v: data.__v
+//         };
+//         res.status(201).json({ message: message.success.SUCCESSFULLY_CREATE, data: responseData });
+//     } catch (error) {
+//         console.error(message.errors.PEOJECT_CREATED_ERROR, error);
+//         return res.status(400).json({ message: message.errors.PEOJECT_CREATED_ERROR, error: error.message });
+//     }
+// }
+
+// const getProjects = async (req, res) => {
+//     const projects = await getProjectDoc();
+//     if (!projects || projects.length === 0) {
+//         return res.status(400).json({ message: message.NO_RECORD_FOUND });
+//     }
+
+//     const fullProjectsDetails = projects.map(project => ({
+//         ...project._doc,
+//         projectImage: `${req.protocol}://${req.get('host')}${project.projectImage}`
+//     }));
+
+//     return res.status(200).json(fullProjectsDetails);
+
+// }
+
+// const updateProject = async (req, res) => {
+//     const { projectName, demoLink, gitLink } = req.body;
+//     const projectImage = req.file ? `/uploads/${req.file.filename}` : null; // Get the uploaded file path if it exists
+//     const { id } = req.params;
+
+//     try {
+//         const updateProject = await updateProjectDoc(
+//             id,
+//             projectName,
+//             demoLink,
+//             gitLink,
+//             projectImage
+//         );
+
+//         if (!updateProject) {
+//             return res.status(404).json({ message: message.NO_RECORD_FOUND, data: updateProject });
+//         }
+//         const data = await updateProjectDoc(updateProject);
+//         // Modify the response to return the full URL for projectImage
+//         const fullProjectImageUrl = `${req.protocol}://${req.get('host')}${data.projectImage}`;
+
+//         const updatedResponseData = {
+//             projectName: data.projectName,
+//             demoLink: data.demoLink,
+//             gitLink: data.gitLink,
+//             projectImage: fullProjectImageUrl,
+//             _id: data._id,
+//             __v: data.__v
+//         };
+//         res.status(200).json({ message: message.success.SUCCESSFULLY_UPDATED, data: updatedResponseData })
+//     } catch (error) {
+//         console.error(message.errors.PROJECT_UPDATE_ERROR, error);
+//         return res.status(500).json({ message: message.errors.PROJECT_UPDATE_ERROR, error: error.message });
+//     }
+// }
+
 const createProject = async (req, res) => {
     try {
         const { projectName, demoLink, gitLink } = req.body;
@@ -15,7 +102,7 @@ const createProject = async (req, res) => {
             return res.status(400).json({ message: message.errors.ALL_FIELD_REQUIRED });
         }
 
-        // Construct the project object
+        // Construct the project object with the full URL
         const project = {
             projectName,
             demoLink,
@@ -24,14 +111,12 @@ const createProject = async (req, res) => {
         };
 
         const data = await createProjectDoc(project);
-        // Modify the response to return the full URL for projectImage
-        const fullProjectImageUrl = `${req.protocol}://${req.get('host')}${data.projectImage}`;
 
         const responseData = {
             projectName: data.projectName,
             demoLink: data.demoLink,
             gitLink: data.gitLink,
-            projectImage: data.projectImage,
+            projectImage: data.projectImage, // This is already a full URL
             _id: data._id,
             __v: data.__v
         };
@@ -40,60 +125,56 @@ const createProject = async (req, res) => {
         console.error(message.errors.PEOJECT_CREATED_ERROR, error);
         return res.status(400).json({ message: message.errors.PEOJECT_CREATED_ERROR, error: error.message });
     }
-}
+};
 
 const getProjects = async (req, res) => {
-    const projects = await getProjectDoc();
-    if (!projects || projects.length === 0) {
-        return res.status(400).json({ message: message.NO_RECORD_FOUND });
+    try {
+        const projects = await getProjectDoc();
+        if (!projects || projects.length === 0) {
+            return res.status(400).json({ message: message.NO_RECORD_FOUND });
+        }
+
+        return res.status(200).json(projects); // projects now contains full URLs in projectImage
+    } catch (error) {
+        console.error(message.errors.PROJECT_FETCHING_ERROR, error);
+        return res.status(500).json({ message: message.errors.PROJECT_FETCHING_ERROR, error: error.message });
     }
-
-    const fullProjectsDetails = projects.map(project => ({
-        ...project._doc,
-        projectImage: project.projectImage.startsWith('http')
-            ? project.image
-            : `${req.protocol}://${req.get('host')}${project.projectImage}`
-    }));
-
-    return res.status(200).json(fullProjectsDetails);
-
-}
+};
 
 const updateProject = async (req, res) => {
     const { projectName, demoLink, gitLink } = req.body;
-    const projectImage = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null; // Get the uploaded file path if it exists
+    const projectImage = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
     const { id } = req.params;
 
     try {
-        const updateProject = await updateProjectDoc(
-            id,
+        const updateData = {
             projectName,
             demoLink,
             gitLink,
             projectImage
-        );
+        };
 
-        if (!updateProject) {
-            return res.status(404).json({ message: message.NO_RECORD_FOUND, data: updateProject });
+        const updatedProject = await updateProjectDoc(id, updateData);
+
+        if (!updatedProject) {
+            return res.status(404).json({ message: message.NO_RECORD_FOUND });
         }
-        const data = await updateProjectDoc(updateProject);
-        // Modify the response to return the full URL for projectImage
-        const fullProjectImageUrl = `${req.protocol}://${req.get('host')}${data.projectImage}`;
 
         const updatedResponseData = {
-            projectName: data.projectName,
-            demoLink: data.demoLink,
-            gitLink: data.gitLink,
-            projectImage: data.projectImage,
-            _id: data._id,
-            __v: data.__v
+            projectName: updatedProject.projectName,
+            demoLink: updatedProject.demoLink,
+            gitLink: updatedProject.gitLink,
+            projectImage: updatedProject.projectImage, // This is already a full URL
+            _id: updatedProject._id,
+            __v: updatedProject.__v
         };
-        res.status(200).json({ message: message.success.SUCCESSFULLY_UPDATED, data: updatedResponseData })
+        res.status(200).json({ message: message.success.SUCCESSFULLY_UPDATED, data: updatedResponseData });
     } catch (error) {
         console.error(message.errors.PROJECT_UPDATE_ERROR, error);
         return res.status(500).json({ message: message.errors.PROJECT_UPDATE_ERROR, error: error.message });
     }
-}
+};
+
 
 const deleteProject = async (req, res) => {
     try {
