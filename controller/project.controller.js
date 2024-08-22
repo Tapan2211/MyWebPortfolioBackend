@@ -9,7 +9,7 @@ const message = require('../config/messages');
 const createProject = async (req, res) => {
     try {
         const { projectName, demoLink, gitLink } = req.body;
-        const projectImage = req.file ? `/uploads/${req.file.filename}` : null;
+        const projectImage = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
 
         if (!projectName || !demoLink || !gitLink || !projectImage) {
             return res.status(400).json({ message: message.errors.ALL_FIELD_REQUIRED });
@@ -31,7 +31,7 @@ const createProject = async (req, res) => {
             projectName: data.projectName,
             demoLink: data.demoLink,
             gitLink: data.gitLink,
-            projectImage: fullProjectImageUrl,
+            projectImage: data.projectImage,
             _id: data._id,
             __v: data.__v
         };
@@ -50,7 +50,9 @@ const getProjects = async (req, res) => {
 
     const fullProjectsDetails = projects.map(project => ({
         ...project._doc,
-        projectImage: `${req.protocol}://${req.get('host')}${project.projectImage}`
+        projectImage: project.projectImage.startsWith('http')
+            ? project.image
+            : `${req.protocol}://${req.get('host')}${project.projectImage}`
     }));
 
     return res.status(200).json(fullProjectsDetails);
@@ -59,7 +61,7 @@ const getProjects = async (req, res) => {
 
 const updateProject = async (req, res) => {
     const { projectName, demoLink, gitLink } = req.body;
-    const projectImage = req.file ? `/uploads/${req.file.filename}` : null; // Get the uploaded file path if it exists
+    const projectImage = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null; // Get the uploaded file path if it exists
     const { id } = req.params;
 
     try {
@@ -82,7 +84,7 @@ const updateProject = async (req, res) => {
             projectName: data.projectName,
             demoLink: data.demoLink,
             gitLink: data.gitLink,
-            projectImage: fullProjectImageUrl,
+            projectImage: data.projectImage,
             _id: data._id,
             __v: data.__v
         };
