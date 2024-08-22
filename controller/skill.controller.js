@@ -48,14 +48,14 @@ const createSkill = async (req, res) => {
 
         const skillData = {
             skill,
-            image,
+            image, // Save the full URL directly to the database
         };
 
         const data = await skillsInstance.create(skillData);
 
         const responseData = {
             skill: data.skill,
-            image: data.image,  // Image is already a full URL
+            image: data.image,  // Return the full URL directly
             _id: data._id,
             __v: data.__v
         };
@@ -66,6 +66,7 @@ const createSkill = async (req, res) => {
     }
 };
 
+
 const updateSkills = async (req, res) => {
     try {
         const { skill } = req.body;
@@ -74,7 +75,7 @@ const updateSkills = async (req, res) => {
 
         const updateData = {
             skill,
-            image
+            image // Store the full URL
         };
 
         const updatedSkill = await skillsInstance.update(id, updateData);
@@ -85,7 +86,7 @@ const updateSkills = async (req, res) => {
 
         const updatedResponseData = {
             skill: updatedSkill.skill,
-            image: updatedSkill.image,  // Image is already a full URL
+            image: updatedSkill.image,  // Return the full URL directly
             _id: updatedSkill._id,
             __v: updatedSkill.__v
         };
@@ -97,6 +98,7 @@ const updateSkills = async (req, res) => {
 };
 
 
+
 const getSkills = async (req, res) => {
     try {
         const skills = await skillsInstance.getSkill();
@@ -106,7 +108,7 @@ const getSkills = async (req, res) => {
 
         const skillDetails = skills.map(skill => ({
             ...skill._doc,
-            image: skill.image.startsWith('https')
+            image: skill.image.startsWith('http')
                 ? skill.image
                 : `${req.protocol}://${req.get('host')}${skill.image}`
         }));
@@ -117,6 +119,7 @@ const getSkills = async (req, res) => {
         return res.status(500).json({ message: message.errors.SKILL_FETCHING_ERROR, error: error.message });
     }
 };
+
 
 // const updateSkills = async (req, res) => {
 //     try {
