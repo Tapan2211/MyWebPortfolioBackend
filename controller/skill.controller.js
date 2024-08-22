@@ -6,7 +6,8 @@ const skillsInstance = new skills();
 const createSkill = async (req, res) => {
     try {
         const { skill } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : null;
+        // const image = req.file ? `/uploads/${req.file.filename}` : null;
+        const image = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
 
         if (!skill || !image) {
             return res.status(400).json({ message: message.errors.ALL_FIELD_REQUIRED });
@@ -57,7 +58,8 @@ const getSkills = async (req, res) => {
 const updateSkills = async (req, res) => {
     try {
         const { skill } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : null;
+        // const image = req.file ? `/uploads/${req.file.filename}` : null;
+        const image = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
         const { id } = req.params;
 
         const updateData = {
